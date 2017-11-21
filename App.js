@@ -14,7 +14,16 @@ import authenticationStore from './Stores/authenticationStore.js';
 import listingsStore from './Stores/listingsStore.js';
 import inboxStore from './Stores/inboxStore.js';
 
+var config = {
+    apiKey: "AIzaSyDkUJjFh8zxkvPq-GsUL6WeOQtS9j_fMPc",
+    authDomain: "crashpad-7f540.firebaseapp.com",
+    databaseURL: "https://crashpad-7f540.firebaseio.com",
+    projectId: "crashpad-7f540",
+    storageBucket: "crashpad-7f540.appspot.com",
+    messagingSenderId: "435444881291"
+  };
 
+firebase.initializeApp(config);
 
 
 const stores = {
