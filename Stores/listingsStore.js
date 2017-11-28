@@ -320,6 +320,8 @@ class listingsStore {
 
     async sendRequest(index) {
 
+      var user = firebase.auth().currentUser;
+
         var d = new Date();
         var time = d.getTime();
         var requestsRef = firebase.database().ref('Requests/');
@@ -349,6 +351,8 @@ class listingsStore {
 
 
     async sendMessageToHost() {
+
+
         let userID = await AsyncStorage.getItem('userID');
         let userName = await AsyncStorage.getItem('userDisplayName');
         userName = userName.split(' ').shift();

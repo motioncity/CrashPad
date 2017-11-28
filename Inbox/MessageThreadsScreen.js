@@ -36,13 +36,13 @@ export class MessageThreadsScreen extends Component{
             rightTitle = {this.props.inbox.formatTime(thread.timeSent,currentTime)}
             subtitle = {thread.lastMessage}
             subtitleStyle = {{fontFamily:'Circular Book', paddingLeft:10}}
-            style = {{borderTopWidth:0,borderBottomWidth:0, paddingVertical:15}}
+            style = {{borderTopWidth:0,borderBottomWidth:0, paddingVertical:20}}
             avatar={{uri:thread.uri}}
             avatarStyle = {{width:50, height:50, borderRadius:25}}
             avatarContainerStyle = {{justifyContent:'center',alignItems:'center'}}
             title= {thread.travellerName+ " - "+ thread.listingTitle}
             titleContainerStyle= {{width:400}}
-            titleStyle = {{fontSize:15, fontFamily:'Circular Book', paddingLeft:10}}
+            titleStyle = {{fontSize:15, fontFamily:'Circular Bold', paddingLeft:10}}
           />
 
         ))
@@ -54,7 +54,7 @@ export class MessageThreadsScreen extends Component{
       render(){
         return (
           <ScrollView style = {{flex:1,backgroundColor:'white'}}>
-          <List containerStyle={{marginBottom: 20, borderTopWidth:0}}>
+          <List containerStyle={{marginTop:1, borderTopWidth:0}}>
               {this.renderThreads()}
             </List>
             </ScrollView>

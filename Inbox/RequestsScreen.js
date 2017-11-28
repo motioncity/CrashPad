@@ -59,7 +59,7 @@ export class RequestsScreen extends Component{
 
             subtitle = {request.senderName}
             subtitleStyle = {{fontFamily:'Circular Book', paddingLeft:10}}
-            style = {{borderTopWidth:0,borderBottomWidth:0, paddingVertical:15}}
+            style = {{borderTopWidth:0,borderBottomWidth:0, paddingVertical:20}}
             avatar={{uri:request.senderUri}}
             avatarStyle = {{width:40, height:40, borderRadius:20}}
             avatarContainerStyle = {{justifyContent:'center',alignItems:'center'}}
@@ -80,7 +80,7 @@ export class RequestsScreen extends Component{
 
         return(
           <ScrollView style = {{flex:1,backgroundColor:'white'}}>
-          <List containerStyle={{marginBottom: 20, borderTopWidth:0}}>
+          <List containerStyle={{marginTop:1, borderTopWidth:0}}>
               {this.renderRequests()}
             </List>
             </ScrollView>

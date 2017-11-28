@@ -127,21 +127,23 @@ class inboxStore {
         let userID = await AsyncStorage.getItem('userID');
         let userPhotoUrl = await AsyncStorage.getItem('userPhotoUrl');
         var index = 0;
-
         var time;
-
-
 
         messagesRef.orderByChild("timeSent").on('child_added', (child) => {
 
+          let isUser = false;
+
+          if(child.val().senderUID == userID){
+            isUser = true;
+          }
 
             messagesArray.push({
                 key: child.key,
                 timeSent: child.val().timeSent,
-                message: child.val().message
+                message: child.val().message,
+                isUser: isUser
             });
 
-            //requestsArray.sort((a,b) => b.timeSent - a.timeSent);
             that.messages = messagesArray;
             that.noMessages = false;
         });

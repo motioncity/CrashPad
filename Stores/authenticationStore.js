@@ -131,6 +131,7 @@ class authenticationStore {
 
 
                     try {
+                      alert(user.displayName);
                         await AsyncStorage.setItem('userID', user.uid);
                         await AsyncStorage.setItem('userDisplayName', user.displayName);
                         await AsyncStorage.setItem('userPhotoUrl', user.photoURL);
