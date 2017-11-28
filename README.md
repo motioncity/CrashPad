@@ -31,4 +31,5 @@
 + Finish Messaging
 + Implement Payment
 + Create Host Portal
++ More Host Tags
 + Alot more.... 
