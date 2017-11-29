@@ -12,6 +12,7 @@ import InboxScreen from '../Inbox/InboxScreen.js';
 
 
 import ListingDetailScreen from '../Listings/ListingDetailScreen.js';
+import MessagesScreen from '../Inbox/MessagesScreen.js';
 
 export const SavedStack = StackNavigator({
   SavedSchools:{
@@ -65,6 +66,9 @@ export const HomeTabs = StackNavigator({
   ListingDetail:{
     screen:ListingDetailScreen
   },
+  Messages:{
+    screen: MessagesScreen
+  }
 },
 {headerMode:'screen'}
 );

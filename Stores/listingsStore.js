@@ -388,7 +388,7 @@ class listingsStore {
 
         newMessageRef.push().set({
             message: that.messageToHost,
-            senderID: userID,
+            senderUID: userID,
             senderUri: userPhotoUrl,
             timeSent: time
         })

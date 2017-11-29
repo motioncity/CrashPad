@@ -72,7 +72,7 @@ export class ListingsScreen extends Component{
           <FlatList
             data= {listings}
             renderItem={this.renderItems}
-            //inverted
+            // inverted
           />
           </View>
         );

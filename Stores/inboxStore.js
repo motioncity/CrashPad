@@ -12,6 +12,7 @@ class inboxStore {
     @observable requests = [];
     @observable threads = [];
     @observable noRequests = true;
+    @observable messages = [];
 
 
     getDaysBetween(time1, time2) {

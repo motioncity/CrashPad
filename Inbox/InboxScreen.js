@@ -45,7 +45,7 @@ export class InboxScreen extends Component{
           tabBarTextStyle = {{ fontFamily: 'Circular Medium',fontSize:17, textAlign:'center'}}
           >
           <RequestsScreen tabLabel = 'Requests'/>
-          <MessageThreadsScreen tabLabel = "Messsages"/>
+          <MessageThreadsScreen tabLabel = "Messsages"  nav={this.props.navigation}/>
           </ScrollableTabView>
         );
   	}

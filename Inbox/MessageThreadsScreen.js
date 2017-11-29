@@ -20,6 +20,13 @@ export class MessageThreadsScreen extends Component{
       this.props.inbox.initThreads();
     }
 
+
+    goToMessages(key){
+      this.props.inbox.initMessages(key);
+     this.props.nav.navigate('Messages');
+    }
+
+
     renderThreads()
     {
       var currentDate = new Date();
@@ -29,7 +36,7 @@ export class MessageThreadsScreen extends Component{
         this.props.inbox.threads.map((thread, i) => (
           <ListItem
             key={i}
-            onPress = {() => console.log(thread.key)}
+            onPress = {() => this.goToMessages(thread.key)}
             underlayColor = {'#f2f3f4'}
             roundAvatar
             hideChevron = {true}
