@@ -49,7 +49,7 @@ export class MessageThreadsScreen extends Component{
             avatarContainerStyle = {{justifyContent:'center',alignItems:'center'}}
             title= {thread.travellerName+ " - "+ thread.listingTitle}
             titleContainerStyle= {{width:400}}
-            titleStyle = {{fontSize:15, fontFamily:'Circular Bold', paddingLeft:10}}
+            titleStyle = {{fontSize:15, fontFamily:'Circular Book', paddingLeft:10}}
           />
 
         ))

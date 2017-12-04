@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ActivityIndicator, Text,  View, Alert,
-Keyboard, ScrollView, FlatList} from 'react-native';
+Keyboard, ScrollView, FlatList, KeyboardAvoidingView} from 'react-native';
 import { Button, FormLabel, FormInput, FormValidationMessage,List, ListItem, Icon} from 'react-native-elements';
 
 import * as firebase from 'firebase';
@@ -42,13 +42,32 @@ export class MessagesScreen extends Component{
       render(){
         let messages = this.props.inbox.messages.slice();
         return (
-          <ScrollView style = {{flex:1,backgroundColor:'white'}}>
+          <KeyboardAvoidingView
+            behavior="padding"
+            keyboardVerticalOffset={61}
+            style = {{flex:1,backgroundColor:'white'}}
+          >
+
+          <ScrollView
+          contentContainerStyle = {{paddingHorizontal:8, paddingVertical:15}}
+          >
           <FlatList
             data= {messages}
             renderItem={this.renderMessages}
             inverted
           />
             </ScrollView>
+
+            <View >
+            <FormInput
+            autoCapitalize = {'none'}
+            placeholder=' Email'
+            onChangeText={(message) => this.props.inbox.messageText = message}
+            value={this.props.inbox.messageText}
+             />
+            </View>
+
+            </KeyboardAvoidingView>
 
         );
       }

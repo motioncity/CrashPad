@@ -83,7 +83,7 @@ export class ListingsCardListView extends Component{
             height = {50}
             rounded
             source={{uri: this.props.hostUri}}
-            containerStyle = {styles.avatarPicture}
+          //  containerStyle = {styles.avatarPicture}
             onPress={() => console.log("Works!")}
             activeOpacity={0.7}
           />

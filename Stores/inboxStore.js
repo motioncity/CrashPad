@@ -13,6 +13,7 @@ class inboxStore {
     @observable threads = [];
     @observable noRequests = true;
     @observable messages = [];
+    @observable messageText = "";
 
 
     getDaysBetween(time1, time2) {
@@ -142,6 +143,7 @@ class inboxStore {
                 key: child.key,
                 timeSent: child.val().timeSent,
                 message: child.val().message,
+                uri: child.val().senderUri,
                 isUser: isUser
             });
 
