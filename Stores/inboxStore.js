@@ -14,6 +14,7 @@ class inboxStore {
     @observable noRequests = true;
     @observable messages = [];
     @observable messageText = "";
+    @observable selectedThread;
 
 
     getDaysBetween(time1, time2) {
@@ -38,8 +39,9 @@ class inboxStore {
         } else if (daysBetween >= 7) {
             var day = today.getDate();
             var month = today.getMonth() + 1;
+            var year = today.getFullYear().toString().slice(2);
 
-            return month + '/' + day
+            return month + '/' + day+ "/" + year;
         } else {
             return today.toLocaleTimeString([], {
                 hour: '2-digit',
@@ -121,8 +123,8 @@ class inboxStore {
 
 
     @action
-    async initMessages(key) {
-        var messagesRef = firebase.database().ref('Messages/' + key);
+    async initMessages() {
+        var messagesRef = firebase.database().ref('Messages/' + this.selectedThread);
         var that = this;
 
         let messagesArray = [];
@@ -144,12 +146,49 @@ class inboxStore {
                 timeSent: child.val().timeSent,
                 message: child.val().message,
                 uri: child.val().senderUri,
-                isUser: isUser
+                senderUID: child.val().senderUID,
+                isUser: isUser,
+                showTime: true,
+                showAvatar:true
             });
+
+            let messageIndex = messagesArray.findIndex(message => message.key == child.key);
+
+          if(messageIndex -1 >= 0 && messagesArray[messageIndex -1].senderUID == child.val().senderUID){
+            messagesArray[messageIndex-1].showTime = false;
+            messagesArray[messageIndex-1].showAvatar = false;
+          }
 
             that.messages = messagesArray;
             that.noMessages = false;
         });
+    }
+
+
+    @action
+    async sendMessage() {
+        let userID = await AsyncStorage.getItem('userID') +"fake";
+        let userPhotoUrl = await AsyncStorage.getItem('userPhotoUrl');
+        var newMessageRef = firebase.database().ref("Messages/" + this.selectedThread);
+
+        var d = new Date();
+        var time = d.getTime();
+
+        var that = this;
+
+        newMessageRef.push().set({
+            message: that.messageText,
+            senderUID: userID,
+            senderUri: userPhotoUrl,
+            timeSent: time
+        })
+        this.messageText = "";
+    }
+
+    @action
+    leaveMessages(navigation){
+      this.messages= [];
+      navigation.goBack(null);
     }
 
 }

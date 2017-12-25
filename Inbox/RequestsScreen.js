@@ -59,7 +59,8 @@ export class RequestsScreen extends Component{
 
             subtitle = {request.senderName}
             subtitleStyle = {{fontFamily:'Circular Book', paddingLeft:10}}
-            style = {{borderTopWidth:0,borderBottomWidth:0, paddingVertical:20}}
+          //  style = {{borderTopWidth:0,borderBottomWidth:0, paddingVertical:20}}
+            containerStyle = {{borderTopWidth:0,borderBottomWidth:0, paddingTop:20, paddingBottom:10}}
             avatar={{uri:request.senderUri}}
             avatarStyle = {{width:40, height:40, borderRadius:20}}
             avatarContainerStyle = {{justifyContent:'center',alignItems:'center'}}

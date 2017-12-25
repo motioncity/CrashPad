@@ -17,7 +17,47 @@ export class Message extends Component{
 
 
     showTime(){
+      var currentDate = new Date();
+      var currentTime = currentDate.getTime();
 
+      var shownTime;
+
+      if(this.props.inbox.getDaysBetween(this.props.timeSent, currentTime) < 1){
+        shownTime = this.props.inbox.formatTime(this.props.timeSent, currentTime)
+      }
+      else{
+      shownTime = this.props.inbox.formatTime(this.props.timeSent, currentTime) +" "+ this.props.inbox.formatTime(this.props.timeSent);
+    }
+
+        if(this.props.showTime){
+          if(this.props.isUser){
+            return(
+              <Text style = {{ color: '#808080',fontFamily:'Circular Book',fontSize:10, textAlign:'right', paddingTop:5}}> {shownTime} </Text>
+            );
+          }
+          else{
+            return(
+              <Text style = {{marginLeft:-20,color: '#808080',fontFamily:'Circular Book',fontSize:10, paddingLeft:15, textAlign:'left',paddingTop:5}}> {shownTime} </Text>
+            );
+          }
+        }
+    }
+
+    showAvatar(){
+      if(this.props.showAvatar){
+        return(
+          <Avatar
+            width={40}
+            height = {40}
+            rounded
+            source={{uri: this.props.uri}}
+            containerStyle = {{position:'absolute'}}
+            //avatarStyle = {{position:'absolute'}}
+            onPress={() => console.log("Works!")}
+            activeOpacity={0.7}
+          />
+        );
+      }
     }
 
     isUser(){
@@ -31,8 +71,7 @@ export class Message extends Component{
           {this.props.message}
           </Text>
           </View>
-
-          <Text style = {{fontFamily:'Circular Book',fontSize:10, paddingRight:5, textAlign:'right'}}> 12/2/2017 12:19 PM </Text>
+          {this.showTime()}
           </View>
           </View>
         );
@@ -40,24 +79,12 @@ export class Message extends Component{
       else{
         return(
           <View style = {{ flex:1 ,flexDirection:'row',justifyContent:'flex-start', maxWidth:300}}>
-          <Avatar
-            width={40}
-            height = {40}
-            rounded
-            source={{uri: this.props.uri}}
-
-            onPress={() => console.log("Works!")}
-            activeOpacity={0.7}
-          />
-
-          <View style = {{ flexDirection:'column'}}>
-          <View style = {{marginLeft:15, padding:10, backgroundColor:'#e5e6eb', borderRadius:15 }}>
-          <Text style = {{fontFamily:'Circular Book', fontSize:15, color:'black', textAlign:'center'}}>
-          {this.props.message}
-          </Text>
+          {this.showAvatar()}
+          <View style = {{marginLeft:50, flexDirection:'column'}}>
+          <View style = {{  padding:10,backgroundColor:'#e5e6eb', borderRadius:15 }}>
+          <Text style = {{fontFamily:'Circular Book', fontSize:15, color:'black', textAlign:'center'}}>{this.props.message}</Text>
           </View>
-
-          <Text style = {{fontFamily:'Circular Book',fontSize:10, paddingLeft:15, textAlign:'left'}}> 12/2/2017 12:19 PM </Text>
+          {this.showTime()}
           </View>
           </View>
         );
@@ -66,7 +93,7 @@ export class Message extends Component{
 
       render(){
         return(
-        <View>
+        <View style = {{paddingBottom:5}}>
         {this.isUser()}
         </View>
       );

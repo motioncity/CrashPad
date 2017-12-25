@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { ActivityIndicator, Dimensions,Text,  View, Alert, TouchableOpacity, Image, ScrollView
 } from 'react-native';
 import {inject, observer} from "mobx-react";
-import Emoji from 'react-native-emoji';
 import { Button, Icon } from 'react-native-elements';
 import styles from '../Styles/listingStyles.js';
 import SavedSchool from './SavedSchool.js';

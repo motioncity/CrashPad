@@ -22,7 +22,8 @@ export class MessageThreadsScreen extends Component{
 
 
     goToMessages(key){
-      this.props.inbox.initMessages(key);
+      this.props.inbox.selectedThread = key;
+      this.props.inbox.initMessages();
      this.props.nav.navigate('Messages');
     }
 
@@ -43,7 +44,7 @@ export class MessageThreadsScreen extends Component{
             rightTitle = {this.props.inbox.formatTime(thread.timeSent,currentTime)}
             subtitle = {thread.lastMessage}
             subtitleStyle = {{fontFamily:'Circular Book', paddingLeft:10}}
-            style = {{borderTopWidth:0,borderBottomWidth:0, paddingVertical:20}}
+            containerStyle = {{borderTopWidth:0,borderBottomWidth:0, paddingTop:20, paddingBottom:10}}
             avatar={{uri:thread.uri}}
             avatarStyle = {{width:50, height:50, borderRadius:25}}
             avatarContainerStyle = {{justifyContent:'center',alignItems:'center'}}

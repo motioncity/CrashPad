@@ -25,7 +25,12 @@ export class ListingsScreen extends Component{
       headerTitleStyle :{textAlign:'center',color:'#838889',fontFamily:'Circular Bold',fontSize:17, backgroundColor:'transparent', marginTop:-3},
       headerStyle: {backgroundColor:'white',borderBottomWidth:0},
       headerRight:  <Icon name='settings' type='material-community' color='#FF5A5F' size={30} containerStyle={{marginRight:15}}/>,
-      tabBarOnPress: (scene, jumpToIndex) => {that.props.listings.onSaved= false; jumpToIndex(scene.index);}
+    tabBarOnPress: (data) => {
+              that.props.listings.onSaved= false;
+              var previousScene = data.previousScene;
+              var scene = data.scene;
+              data.jumpToIndex( scene.index );
+          }
   };
 };
 
@@ -90,9 +95,9 @@ export class ListingsScreen extends Component{
           onSwipedAll={() => {this.props.listings.noMoreCards()}}
           cardIndex={this.props.listings.cardIndex}
           backgroundColor={'white'}
-          cardHorizontalMargin = {30}
+          //cardHorizontalMargin = {30}
           >
-      </Swiper>
+          </Swiper>
         </View>
         <UnderlayCards/>
         </View>
