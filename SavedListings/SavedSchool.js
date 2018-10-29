@@ -12,6 +12,22 @@ export class SavedSchool extends Component{
     super(props);
   }
 
+  componentWillMount(){
+    this.goToSavedDebounced= this.debounce(function () {
+     this.goToSaved.apply(this);
+   }, 700);
+  }
+
+  debounce(fn, delay) {
+  var timer = null;
+  return function () {
+    var context = this, args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      fn.apply(context, args);
+    }, delay);
+  };
+}
 
   goToSaved(){
     this.props.listings.selectedSavedSchool = this.props.schoolName;
@@ -31,7 +47,7 @@ export class SavedSchool extends Component{
     return(
       <TouchableOpacity
       style = {styles.listingsCardListView}
-      onPress={() => this.goToSaved()}
+      onPress={() => this.goToSavedDebounced()}
       activeOpacity={0.9}
       >
         <Image style= {styles.listViewImage} source= {{uri:this.props.uri}}/>

@@ -31,8 +31,16 @@ export class SavedScreen extends Component{
         size = {40}
         containerStyle={{marginLeft:10}}
         onPress={() => that.props.listings.leaveSaved(navigation)} />,
-      headerRight:  <Icon name='settings' type='material-community' color='#FF5A5F' size={30} containerStyle={{marginRight:15}}/>,
-        tabBarOnPress: (scene, jumpToIndex) => {that.props.listings.onSaved= true; jumpToIndex(scene.index);}
+        headerRight:  <Icon name='settings' type='material-community' color='#FF5A5F' size={30} containerStyle={{marginRight:15}}/>,
+        tabBarOnPress: (data) => {
+                  that.props.listings.onSaved= true;
+                  that.props.listings.onSelfProfile = false;
+                  that.props.listings.onListings = false;
+                  that.props.listings.onaProfile = false;
+                  var previousScene = data.previousScene;
+                  var scene = data.scene;
+                  data.jumpToIndex( scene.index );
+              }
   };
 };
 
@@ -45,6 +53,7 @@ export class SavedScreen extends Component{
     {
         this.props.listings.onSaved=true;
         this.props.listings.initSavedListingIdsSavedScreen();
+    //  this.props.listings.initSavedListings();
     }
 
    componentDidMount(){

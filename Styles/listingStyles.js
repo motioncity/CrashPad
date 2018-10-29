@@ -45,8 +45,7 @@ export default StyleSheet.create({
   listingsImage:{
     width:width,
     height:height,
-    borderRadius:3,
-
+    borderRadius:3
   },
   titleContainer:{
     flexDirection:'row',
@@ -66,7 +65,6 @@ export default StyleSheet.create({
     fontFamily:'Circular Book'
   },
   listingsCardListView:{
-
     backgroundColor:'white',
     width:400,
     height:285,
@@ -101,6 +99,13 @@ saveContainer:{
   position:'absolute',
   top:0,
   left:330
+},
+editContainer:{
+  justifyContent:'center',
+  alignItems:'center',
+  position:'absolute',
+  top:0,
+  left:328
 },
   titleTextListView:{
     color:'#3b444b',

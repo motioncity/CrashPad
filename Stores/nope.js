@@ -10,7 +10,7 @@ class listingsStore {
     @observable listings = [];
     @observable savedIds = [];
     @observable savedIdsSavedScreen = [];
-
+    @observable listingImages = [];
     @observable savedListings = [];
     @observable userListings = [];
     @observable hostTags = [];
@@ -29,59 +29,36 @@ class listingsStore {
     @observable selectedSavedSchool = "";
     @observable savedSchools = [];
 
+    @observable selectedIndex;
     @observable hostUri;
     @observable hostUid = "";
     @observable hostName = "";
-
-    @observable detailUID = "";
-    @observable detailSchool = "";
-    @observable detailMainUri = "";
-
-
     @observable detailTitle = "";
     @observable detailDescription = "";
     @observable detailSpace = "";
-    @observable listingImages = [];
-
     @observable selectedIsSaved = false;
     @observable detailIsLoaded = false;
-    @observable selectedIndex;
 
     @observable onSaved = false;
-
+    @observable onSelfProfile = false;
     @observable sendMessageVisible = false;
     @observable messageToHost = '';
 
 
-    @observable selfListings = [];
-    @observable selfPhotoUrl = "";
-    @observable selfSchool = "";
-    @observable selfRating = 0;
-    @observable selfName = "";
-    @observable selfBio = "";
-    @observable selfCoverUrl = "";
-    @observable selfProfileLoaded = false;
-    @observable onSelfProfile = false;
-
-    @observable savedUserListingsIds = [];
-    @observable profileUID = "";
     @observable userPhotoUrl = "";
     @observable userSchool = "";
     @observable userRating = 0;
     @observable userName = "";
     @observable userBio = "";
     @observable userCoverUrl = "";
+
+
+
     @observable profileLoaded = false;
-    @observable onaProfile = false;
 
 
     @action
     async initSavedListingIds() {
-
-    //  if(this.selectedSavedSchool == "" || this.selectedSavedSchool== this.selectedSchool){
-
-      //  console.log(this.selectedSchool);
-
         let userID = await AsyncStorage.getItem('userID');
         var userSavedRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + this.selectedSchool);
 
@@ -102,25 +79,21 @@ class listingsStore {
 
         userSavedRef.on('child_removed', (child) => {
             if ((child.key != "Uri") && (child.key != "numberOfListings") && (child.key != "Images")) {
-               if(this.selectedSavedSchool == "" || this.selectedSavedSchool== this.selectedSchool){
                 saveArray.splice(saveArray.indexOf(child.key), 1);
                 let index = that.listings.findIndex(listing => listing.key == child.key);
-                  console.log(this.selectedSchool);
                 let temp = that.listings.slice();
                 temp[index].isSaved = false;
                 that.listings = temp;
                 that.savedIds = saveArray;
-              }
             }
         });
-    //  }
     }
 
     @action
     async initSavedListingIdsSavedScreen() {
         let userID = await AsyncStorage.getItem('userID');
         var userSavedRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + this.selectedSavedSchool);
-      //  console.log("saved:"+this.selectedSavedSchool);
+
         var saveArray = [];
         var that = this;
 
@@ -134,7 +107,6 @@ class listingsStore {
         userSavedRef.on('child_removed', (child) => {
             if ((child.key != "Uri") && (child.key != "numberOfListings") && (child.key != "Images")) {
                 saveArray.splice(saveArray.indexOf(child.key), 1);
-                that.savedIdsSavedScreen = saveArray;
                 that.initSavedListings();
 
             }
@@ -145,63 +117,22 @@ class listingsStore {
 
 
 
-        @action
-        async initSavedUserListingsIds(hostUID) {
 
-            var userID = await AsyncStorage.getItem('userID');
-            var userSavedRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + this.userSchool);
-
-            var saveArray = [];
-            var that = this;
-
-            userSavedRef.orderByChild("hostUID").equalTo(hostUID).on('child_added', (child) => {
-                if ((child.key != "Uri") && (child.key != "numberOfListings") && (child.key != "Images")) {
-                    saveArray.push(child.key);
-
-                    let index = that.userListings.findIndex(listing => listing.key == child.key);
-                    let temp = that.userListings.slice();
-                    temp[index].isSaved = true;
-                    that.userListings = temp;
-
-
-                    that.savedUserListingsIds = saveArray;
-                }
-
-            });
-
-            userSavedRef.orderByChild("hostUID").equalTo(hostUID).on('child_removed', (child) => {
-                if ((child.key != "Uri") && (child.key != "numberOfListings") && (child.key != "Images")) {
-                    saveArray.splice(saveArray.indexOf(child.key), 1);
-                    let index = that.userListings.findIndex(listing => listing.key == child.key);
-                    let temp = that.userListings.slice();
-                    temp[index].isSaved = false;
-                    that.userListings = temp;
-
-                    that.savedUserListingsIds = saveArray;
-                }
-            });
-
-
-
+    @action
+    handleSave(index) {
+        if ((this.onSaved) && (this.savedListings!=undefined)&&(this.savedListings[index].isSaved)) {
+            this.unSaveListing(index);
+        } else if (this.listings[index].isSaved) {
+            this.unSaveListing(index);
+        } else {
+            this.saveListing(index);
         }
-
-
-
-@action handleSave(isSaved, key, school,listingImage, hostUID){
-    if(isSaved){
-
-      this.unSaveListing(key,school)
     }
-    else{
-        this.saveListing(key,school, listingImage, hostUID)
-    }
-  }
+
 
 
     @action
-    async saveListing(key,school, listingImage, hostUID) {
-
-
+    async saveListing(index) {
 
         this.selectedIsSaved = true;
         var that = this;
@@ -210,19 +141,19 @@ class listingsStore {
         var time = d.getTime();
 
         let userID = await AsyncStorage.getItem('userID');
-        var userSavedRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + school);
-        var savedImagesRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + school + '/Images');
+        var listingImage = this.listings[index].uri;
+        var userSavedRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + this.selectedSchool);
+        var savedImagesRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + this.selectedSchool + '/Images');
 
 
-        savedImagesRef.child(key).set({
+        savedImagesRef.child(this.listings[index].key).set({
             Uri: listingImage,
             timeSaved: time
         });
 
 
-        userSavedRef.child(key).set({
-            timeSaved: time,
-            hostUID :hostUID
+        userSavedRef.child(this.listings[index].key).set({
+            timeSaved: time
         });
 
         var savedListingsLength = this.savedIds.length;
@@ -238,50 +169,36 @@ class listingsStore {
 
 
     @action
-    async unSaveListing(key, school) {
-
+    async unSaveListing(index) {
         let userID = await AsyncStorage.getItem('userID');
+
+        var key;
+        var school;
+        var listingImage;
+        if (this.onSaved) {
+            key = this.savedListings[index].key;
+            school = this.selectedSavedSchool;
+        } else {
+            key = this.listings[index].key;
+            school = this.selectedSchool;
+        }
 
         var savedListingRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + school + '/' + key);
         var schoolRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + school);
         var userSavedRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + school);
-        var savedImageRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + school + '/Images/' + key);
+        var savedImageRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + this.selectedSchool + '/Images/' + key);
 
         savedListingRef.remove();
         savedImageRef.remove();
 
-        this.selectedIsSaved = false;
+        if (index == this.selectedIndex) {
+            this.selectedIsSaved = false;
+        }
 
-
-
-        /*
-        if (this.savedIds.length == 0 ) {
+        if (this.savedIds.length == 0) {
             schoolRef.remove();
-        }
-        */
-        if(this.onSaved && this.savedIdsSavedScreen.length == 0){
-          schoolRef.remove()
-        }
-        if(this.onaProfile && this.savedUserListingsIds.length == 0){
-
-          schoolRef.remove();
-        }
-        if(this.savedIds.length == 0){
-          schoolRef.remove();
-        }
-
-         else {
-            //var savedListingsLength = !this.onSaved? this.savedIds.length : this.savedIdsSavedScreen.length;
-            var savedListingsLength;
-            if(this.onSaved){
-              savedListingsLength = this.savedIdsSavedScreen.length;
-            }
-            else if (this.onaProfile){
-              savedListingsLength = this.savedUserListingsIds.length;
-            }
-            else{
-              savedListingsLength = this.savedIds.length
-            }
+        } else {
+            var savedListingsLength = this.savedIds.length;
             var savedImagesRef = firebase.database().ref('Users/' + userID + '/SavedListings/' + school + '/Images/');
 
             savedImagesRef.orderByChild('timeSaved').limitToLast(1).once('value', (snapshot) => {
@@ -353,7 +270,6 @@ class listingsStore {
 
                 savedListingsArray.push({
                     key: child.key,
-                    listingUID: child.key,
                     title: child.val().Title,
                     description: child.val().Description,
                     space: child.val().Space,
@@ -397,7 +313,6 @@ class listingsStore {
             listingsArray.push({
                 index: listingIndex++,
                 key: child.key,
-                listingUID: child.key,
                 title: child.val().Title,
                 description: child.val().Description,
                 space: child.val().Space,
@@ -416,67 +331,14 @@ class listingsStore {
     }
 
     @action
-    async initSelfProfile() {
-
-      this.selfProfileLoaded = false;
-
-      let userID = await AsyncStorage.getItem('userID');
-
-
-        let userRef = firebase.database().ref('Users/'+userID+"/UserData/");
-
-        await userRef.once('value',(snapshot)=>{
-          this.selfName = "" + snapshot.val().firstName +" "+ snapshot.val().lastName,
-          this.selfPhotoUrl = snapshot.val().profileUrl,
-          this.selfSchool = snapshot.val().School,
-          this.selfRating= snapshot.val().Rating,
-          this.selfBio = snapshot.val().Bio,
-          this.selfCoverUrl = snapshot.val().coverUrl
-        })
-
-        var listingsRef = firebase.database().ref('/Universities/' + this.selfSchool+ '/Listings/');
-        var that = this;
-        var listingIndex = 0;
-        var listingsArray = [];
-
-        await listingsRef.orderByChild('hostUID').equalTo(userID).once('value', (snap) => {
-
-            snap.forEach((child) => {
-              listingsArray.push({
-                  index: listingIndex++,
-                  key: child.key,
-                  listingUID: child.key,
-                  title: child.val().Title,
-                  description: child.val().Description,
-                  space: child.val().Space,
-                  school: child.val().School,
-                  price: child.val().Price,
-                  datePosted: child.val().datePosted,
-                  hostUID: child.val().hostUID,
-                  hostUri: child.val().hostUri,
-                  uri: child.val().mainUri,
-                  isSaved: false,
-                  onSelfProfile:true
-                    });
-                });
-        });
-
-
-
-        this.selfListings = listingsArray;
-        this.selfProfileLoaded = true;
-
-    }
-
-
-    @action
-    async initUserProfile(userID) {
+    async initUserListings(userID) {
 
       this.profileLoaded = false;
+      if(!userID){
+        userID = await AsyncStorage.getItem('userID');
+      }
 
-      this.profileUID = userID;
-
-        let userRef = firebase.database().ref('Users/'+this.profileUID+"/UserData/");
+        let userRef = firebase.database().ref('Users/'+userID+"/UserData/");
 
         await userRef.once('value',(snapshot)=>{
           this.userName = "" + snapshot.val().firstName +" "+ snapshot.val().lastName,
@@ -485,22 +347,23 @@ class listingsStore {
           this.userRating= snapshot.val().Rating,
           this.userBio = snapshot.val().Bio,
           this.userCoverUrl = snapshot.val().coverUrl
+
         })
 
-        this.initSavedUserListingsIds(userID);
 
         var listingsRef = firebase.database().ref('/Universities/' + this.userSchool+ '/Listings/');
         var that = this;
         var listingIndex = 0;
         var listingsArray = [];
+        var savedListingsArray = [];
 
-        await listingsRef.orderByChild('hostUID').equalTo(userID).once('value', (snap) => {
+        listingsRef.orderByChild('hostUID').equalTo(userID).once('value', (snap) => {
+            let isSaved = false;
 
             snap.forEach((child) => {
               listingsArray.push({
                   index: listingIndex++,
                   key: child.key,
-                  listingUID: child.key,
                   title: child.val().Title,
                   description: child.val().Description,
                   space: child.val().Space,
@@ -510,16 +373,16 @@ class listingsStore {
                   hostUID: child.val().hostUID,
                   hostUri: child.val().hostUri,
                   uri: child.val().mainUri,
-                  isSaved: false,
-                //  onSelfProfile:true
+                  isSaved: isSaved,
+                  onSelfProfile:true
+                    });
                 });
-            });
-    });
+        });
+
         this.userListings = listingsArray;
         this.profileLoaded = true;
 
     }
-
 
 
 
@@ -603,48 +466,62 @@ class listingsStore {
 
 
     @action
-    initImages(key,school, listingImage, index) {
+    initImages(index) {
 
         this.detailIsLoaded = false;
         this.selectedIndex = index;
         this.listingImages = [];
+
+        var key;
+        var school;
+        if (this.onSaved) {
+            key = this.savedListings[this.selectedIndex].key;
+            school = this.selectedSavedSchool;
+        } else {
+            key = this.listings[this.selectedIndex].key;
+            school = this.selectedSchool;
+        }
+
+
 
         var imagesRef = firebase.database().ref('/Universities/' + school + '/ListingsDetails/' + key + '/Images/');
 
         var imagesArray = [];
         var that = this;
 
-        imagesRef.orderByChild('Index').once('value', (snap) => {
-            snap.forEach((child) => {
+        imagesRef.orderByChild('Index').on('child_added', (child) => {
+
             imagesArray.push({
                 uri: child.val().Uri,
                 key: child.key
-                });
             });
 
             this.listingImages = imagesArray;
-            this.initListingDetail(key,school, listingImage);
-            this.initTags(key,school);
+            this.initListingDetail();
+            this.initTags();
         });
 
     }
 
 
     @action
-    initListingDetail(key, school, listingImage) {
-      //  console.log("here");
-        //console.log(listingImage);
+    initListingDetail() {
+        var key;
+        var school;
+        if (this.onSaved) {
+            key = this.savedListings[this.selectedIndex].key;
+            school = this.selectedSavedSchool;
 
-
-        this.detailUID = key;
-        this.detailSchool = school;
-        this.detailMainUri = listingImage;
+        } else {
+            key = this.listings[this.selectedIndex].key;
+            school = this.selectedSchool;
+        }
 
 
         var userDetailRef = firebase.database().ref('/Universities/' + school + '/ListingsDetails/' + key);
 
-        userDetailRef.once('value', (snapshot) => {
-                this.hostUri = snapshot.val().hostUri,
+        userDetailRef.on('value', (snapshot) => {
+            this.hostUri = snapshot.val().hostUri,
                 this.hostUid = snapshot.val().hostUID,
                 this.hostName = snapshot.val().hostName,
                 this.detailTitle = snapshot.val().Title,
@@ -672,16 +549,14 @@ class listingsStore {
         }
 
         if (selectedArray.length != 0) {
-          var newListing = selectedArray[newIndex];
-          this.selectedIsSaved = newListing.isSaved;
-          this.initImages(newListing.listingUID, newListing.school,newListing.uri, newListing.index);
+            this.selectedIsSaved = selectedArray[newIndex].isSaved;
+            this.initImages(newIndex);
         }
 
     }
 
     @action
     nextListing(index) {
-      //console.log(index);
         var selectedArray;
         var newIndex;
         if (this.onSaved) {
@@ -697,30 +572,26 @@ class listingsStore {
         }
 
         if (selectedArray.length != 0) {
-            var newListing = selectedArray[newIndex];
-            this.selectedIsSaved = newListing.isSaved;
-            this.initImages(newListing.listingUID, newListing.school,newListing.uri, newListing.index);
+            this.selectedIsSaved = selectedArray[newIndex].isSaved;
+            this.initImages(newIndex);
         }
 
     }
 
     @action
     clearListing(nav) {
-        this.selectedIsSaved = false;
         this.hostUid = "";
         this.hostName = "";
         this.hostTags = [];
         this.detailTitle = "";
         this.detailDescription = "";
         this.detailSpace = "";
-        this.detailUID = "";
-        this.detailSchool = "";
-        this.detailMainUri = "";
         nav.goBack(null);
     }
 
     @action
     leaveSaved(nav) {
+      //  this.hostUri = "";
         this.hostUid = "";
         this.hostName = "";
         this.hostTags = [];
@@ -730,15 +601,6 @@ class listingsStore {
         this.savedIdsSavedScreen = [];
         this.onSaved = false;
         nav.goBack(null);
-    }
-
-    @action
-    leaveProfile(nav){
-    //  this.profileLoaded = false;
-      this.profileUID = "";
-      this.onaProfile = false;
-      this.savedUserListingsIds = [];
-      nav.goBack(null);
     }
 
     getEmoji(name) {
@@ -780,8 +642,18 @@ class listingsStore {
     }
 
     @action
-    initTags(key, school) {
+    initTags() {
         this.hostTags = [];
+
+        var key;
+        var school;
+        if (this.onSaved) {
+            key = this.savedListings[this.selectedIndex].key;
+            school = this.selectedSavedSchool;
+        } else {
+            key = this.listings[this.selectedIndex].key;
+            school = this.selectedSchool;
+        }
 
 
         var tagsRef = firebase.database().ref('/Universities/' + school + '/ListingsDetails/' + key + '/hostTags/');
@@ -789,14 +661,13 @@ class listingsStore {
         var tagsArray = [];
         var that = this;
 
-        tagsRef.on('value', (snap) => {
-            snap.forEach((child) => {
+        tagsRef.on('child_added', (child) => {
+
             tagsArray.push({
                 name: child.val().Value,
                 emoji: that.getEmoji(child.val().Value),
                 color: that.getColor(child.val().Value)
             });
-          });
 
             that.hostTags = tagsArray;
             that.detailIsLoaded = true;

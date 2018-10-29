@@ -17,14 +17,29 @@ export class MessageThreadsScreen extends Component{
     }
 
     componentWillMount(){
+      this.goToMessagesDebounced= this.debounce(function (key) {
+       this.goToMessages.apply(this, [key]);
+     }, 500);
       this.props.inbox.initThreads();
     }
 
+    debounce(fn, delay) {
+    var timer = null;
+    return function () {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        fn.apply(context, args);
+      }, delay);
+    };
+  }
 
-    goToMessages(key){
+
+  async goToMessages(key){
       this.props.inbox.selectedThread = key;
-      this.props.inbox.initMessages();
+     await this.props.inbox.initMessages();
      this.props.nav.navigate('Messages');
+
     }
 
 
@@ -37,7 +52,7 @@ export class MessageThreadsScreen extends Component{
         this.props.inbox.threads.map((thread, i) => (
           <ListItem
             key={i}
-            onPress = {() => this.goToMessages(thread.key)}
+            onPress = {() => this.goToMessagesDebounced(thread.key)}
             underlayColor = {'#f2f3f4'}
             roundAvatar
             hideChevron = {true}

@@ -9,10 +9,11 @@ import SavedScreen from '../SavedListings/SavedScreen.js';
 import SavedSchoolScreen from '../SavedListings/SavedSchoolScreen.js';
 import InboxScreen from '../Inbox/InboxScreen.js';
 
-
-
 import ListingDetailScreen from '../Listings/ListingDetailScreen.js';
 import MessagesScreen from '../Inbox/MessagesScreen.js';
+import SelfProfileScreen from '../Profiles/SelfProfileScreen.js';
+import UserProfileScreen from '../Profiles/UserProfileScreen.js';
+import ProfileScreen from '../Profiles/ProfileScreen.js'
 
 export const SavedStack = StackNavigator({
   SavedSchools:{
@@ -48,6 +49,13 @@ export const Tabs = TabNavigator({
       tabBarIcon: ({ tintColor }) => <Icon name="envelope-o"   type='font-awesome' size={20} color={tintColor} />
     },
   },
+  Profile: {
+    screen: ProfileScreen,
+    navigationOptions: {
+      tabBarLabel:'Profile',
+      tabBarIcon: ({ tintColor }) => <Icon name="user-o"   type='font-awesome' size={20} color={tintColor} />
+    },
+  },
 },
 {
   tabBarOptions:{
@@ -68,7 +76,10 @@ export const HomeTabs = StackNavigator({
   },
   Messages:{
     screen: MessagesScreen
-  }
+  },
+  UserProfile:{
+    screen:UserProfileScreen
+  },
 },
 {headerMode:'screen'}
 );

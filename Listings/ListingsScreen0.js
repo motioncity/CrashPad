@@ -24,17 +24,10 @@ export class ListingsScreen extends Component{
       title: params.title,
       headerTitleStyle :{textAlign:'center',color:'#838889',fontFamily:'Circular Bold',fontSize:17, backgroundColor:'transparent', marginTop:-3},
       headerStyle: {backgroundColor:'white',borderBottomWidth:0},
-      headerRight:  <Icon name='settings'
-      type='material-community'
-      color='#FF5A5F'
-      size={30}
-      containerStyle={{marginRight:15}}
-      onPress={() => that.school()}
-      />,
+      headerRight:  <Icon name='settings' type='material-community' color='#FF5A5F' size={30} containerStyle={{marginRight:15}}/>,
     tabBarOnPress: (data) => {
-              that.props.listings.onListings = true;
               that.props.listings.onSaved= false;
-              that.props.listings.onSelfProfile = false;
+              that.props.listings.onSelf = false;
               var previousScene = data.previousScene;
               var scene = data.scene;
               data.jumpToIndex( scene.index );
@@ -49,8 +42,7 @@ export class ListingsScreen extends Component{
 
     componentWillMount()
     {
-      this.props.onListings = true;
-      this.props.listings.initListings();
+      this.props.listings.initSavedListingIds();
     }
 
     componentDidMount(){
@@ -60,17 +52,9 @@ export class ListingsScreen extends Component{
      }
 
 
-school(){
-  this.props.listings.selectedSchool == "University of Delaware" ? this.props.listings.selectedSchool = "Temple University" : this.props.listings.selectedSchool = "University of Delaware";
-  this.props.listings.initListings();
-  var schoolName = this.props.listings.selectedSchool;
-  this.props.navigation.setParams({ title: schoolName })
-
-}
-
 
   renderItems = ({item}) => (
-  <ListingsCardListView  {...item} nav={this.props.navigation}/>
+  <ListingsCardListView {...item} nav={this.props.navigation}/>
   );
 
 
@@ -78,7 +62,7 @@ school(){
       const list = true;
 
       let listings = this.props.listings.listings.slice();
-    //  console.log(this.props.listings.onSelfProfile);
+
 
       if((this.props.listings.cardsEmpty)||(this.props.listings.listings.length==0)){
         return(

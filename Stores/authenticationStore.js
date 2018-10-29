@@ -131,10 +131,17 @@ class authenticationStore {
 
 
                     try {
-                      alert(user.displayName);
+
                         await AsyncStorage.setItem('userID', user.uid);
                         await AsyncStorage.setItem('userDisplayName', user.displayName);
                         await AsyncStorage.setItem('userPhotoUrl', user.photoURL);
+                        let schoolRef = firebase.database().ref('Users/'+user.uid+"/UserData/");
+                        let school = "";
+                        await schoolRef.once('value',(snapshot)=>{
+                          school = snapshot.val().School
+                        })
+                        
+                        await AsyncStorage.setItem('userSchool', school);
 
                     } catch (error) {
                         alert(error.message);

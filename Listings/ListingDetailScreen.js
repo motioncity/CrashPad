@@ -22,13 +22,18 @@ const that = null;
 export class ListingDetailScreen extends Component{
   constructor(props){
     super(props);
+    this.state = {
+      onSelfProfile:false
+    }
   }
 
   static navigationOptions = ({ navigation }) => {
   const { params = {} } = navigation.state;
+
   return {
     headerStyle:{backgroundColor:'white'},
-    headerLeft: <View style = {{flexDirection:'row'}}>
+    headerLeft: (!params.onSelfProfile?
+    <View style = {{flexDirection:'row'}}>
     <Icon
     name='close'
     type='material-community'
@@ -53,22 +58,116 @@ export class ListingDetailScreen extends Component{
     containerStyle={{marginBottom:10,marginLeft:10}}
     onPress={() => that.props.listings.nextListing(that.props.listings.selectedIndex)} />
 
-    </View>,
-    headerRight: <Button
+    </View>
+    :
+    <View style = {{flexDirection:'row'}}>
+    <Icon
+    name='chevron-left'
+    type='material-community'
+    color='#FF5A5F'
+    size = {30}
+    containerStyle={{marginBottom:10,marginLeft:10}}
+    onPress={() => that.props.listings.clearListing(navigation)} />
+    </View>
+  ),
+    headerRight: (!params.onSelfProfile  ?
+                <Button
                 borderRadius={3}
                 buttonStyle={{padding:16,marginTop:-10,height:20}}
                 backgroundColor={'#FF5A5F'}
                 color={'white'}
                 textStyle={{fontSize:15,fontFamily:'Circular Medium'}}
                 title='Send Request'
-                onPress={() => that.props.listings.sendRequest(that.props.listings.selectedIndex)}
+                onPress={() => that.sendHostDebounced()}
                 />
+                :
+                <Button
+                borderRadius={3}
+                buttonStyle={{padding:16,marginTop:-10,height:20}}
+                backgroundColor={'#FF5A5F'}
+                color={'white'}
+                textStyle={{fontSize:15,fontFamily:'Circular Medium'}}
+                title='Edit Listing'
+                onPress={() => that.sendHostDebounced()}
+                />
+              ),
   };
 };
 
+    debounce(fn, delay) {
+    var timer = null;
+    return function () {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        fn.apply(context, args);
+      }, delay);
+    };
+    }
+
+
+    componentWillMount(){
+      const { state } = this.props.navigation;
+      this.setState({
+        onSelfProfile: state.params.onSelfProfile
+      });
+
+      this.sendHostDebounced= this.debounce(function () {
+       this.sendHostRequest.apply(this);
+     }, 700);
+    }
 
   componentDidMount(){
    that = this;
+
+  }
+
+  showSaveContainer(){
+    if(!this.state.onSelfProfile){
+      return(
+        <View style = {styles.saveContainer}>
+          <Icon
+          reversed
+          name='heart-outline'
+          type='material-community'
+          color='#f4f4f4'
+          underlayColor='transparent'
+          containerStyle = {{zIndex:999999}}
+          size={34}
+          onPress = {() => this.props.listings.handleSave(this.props.listings.selectedIsSaved,this.props.listings.detailUID, this.props.listings.detailSchool,  this.props.listings.detailMainUri, this.props.listings.hostUid)}
+        />
+          <Icon
+          name='heart'
+          type='material-community'
+          color={this.props.listings.isSavedListing(this.props.listings.selectedIsSaved)}
+          underlayColor='transparent'
+          containerStyle = {{position:'absolute'}}
+          size={32}
+        />
+        </View>
+      );
+    }
+  }
+
+  showMessageButton(){
+    if(!this.state.onSelfProfile){
+      return(
+        <TouchableOpacity style = {{justifyContent:'center',alignItems:'center',borderRadius:30, width:60, height:60,marginLeft:280, marginTop:-30}}
+        activeOpacity={0.7}
+        >
+        <Icon
+        raised
+        name='comment-o'
+        type='font-awesome'
+        color='white'
+        underlayColor="#FF5A5F"
+        containerStyle = {{backgroundColor:'#FF5A5F'}}
+        size={30}
+       onPress = {() => this.openMessageScreen()}
+      />
+      </TouchableOpacity>
+      );
+    }
   }
 
 
@@ -99,8 +198,13 @@ export class ListingDetailScreen extends Component{
       this.props.listings.sendMessageVisible = true;
     }
 
+    sendHostRequest(){
+      this.props.listings.sendRequest(this.props.listings.selectedIndex)
+    }
+
   render(){
       if(this.props.listings.detailIsLoaded){
+
     return(
       <ScrollView  style = {{flex:1,backgroundColor:'white'}} keyboardShouldPersistTaps = {'always'}>
 
@@ -117,47 +221,12 @@ export class ListingDetailScreen extends Component{
       inactiveSlideScale={1}
     />
 
-    <View style = {styles.saveContainer}>
-      <Icon
-      reversed
-      name='heart-outline'
-      type='material-community'
-      color='#f4f4f4'
-      underlayColor='transparent'
-      containerStyle = {{zIndex:999999}}
-      size={34}
-      onPress = {() => this.props.listings.handleSave(this.props.listings.selectedIndex)}
-    />
-      <Icon
-      name='heart'
-      type='material-community'
-      color={this.props.listings.isSavedListing(this.props.listings.selectedIsSaved)}
-      underlayColor='transparent'
-      containerStyle = {{position:'absolute'}}
-      size={32}
-    />
-    </View>
+    {this.showSaveContainer()}
 
-    <TouchableOpacity style = {{justifyContent:'center',alignItems:'center',borderRadius:30, width:60, height:60,marginLeft:280, marginTop:-30}}
-    activeOpacity={0.7}
-    >
-    <Icon
-    raised
-    name='comment-o'
-    type='font-awesome'
-    color='white'
-    underlayColor="#FF5A5F"
-    containerStyle = {{backgroundColor:'#FF5A5F'}}
-    size={30}
-   onPress = {() => this.openMessageScreen()}
-  />
-  </TouchableOpacity>
-
-
-
+    {this.showMessageButton()}
     <View style = {{marginTop:-5,marginLeft:20,width:330}}>
 
-      <View style ={{width:260}}>
+      <View style ={{width:260, marginTop:this.state.onSelfProfile ? 15 : 0}}>
       <Text style={styles.detailTitle}>{this.props.listings.detailTitle}</Text>
       </View>
 

@@ -13,6 +13,7 @@ import {RootNav} from './Navigation/rootNav.js';
 import authenticationStore from './Stores/authenticationStore.js';
 import listingsStore from './Stores/listingsStore.js';
 import inboxStore from './Stores/inboxStore.js';
+import profileStore from './Stores/profileStore.js';
 
 var config = {
     apiKey: "AIzaSyDkUJjFh8zxkvPq-GsUL6WeOQtS9j_fMPc",
@@ -29,7 +30,8 @@ firebase.initializeApp(config);
 const stores = {
   auth:authenticationStore,
   listings:listingsStore,
-  inbox: inboxStore
+  inbox: inboxStore,
+  profile:profileStore
 };
 
 console.disableYellowBox = true;

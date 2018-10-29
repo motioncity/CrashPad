@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, Text,  View, Alert,
+import { ActivityIndicator, Text,  View, Alert,TouchableOpacity,
 Keyboard} from 'react-native';
 import {Avatar, ListItem, Icon} from 'react-native-elements';
 
@@ -32,12 +32,12 @@ export class Message extends Component{
         if(this.props.showTime){
           if(this.props.isUser){
             return(
-              <Text style = {{ color: '#808080',fontFamily:'Circular Book',fontSize:10, textAlign:'right', paddingTop:5}}> {shownTime} </Text>
+              <Text style = {{ color: '#808080',fontFamily:'Circular Book',fontSize:10, textAlign:'right', paddingTop:5, paddingBottom:this.props.isLast ? 5 : 15}}> {shownTime} </Text>
             );
           }
           else{
             return(
-              <Text style = {{marginLeft:-20,color: '#808080',fontFamily:'Circular Book',fontSize:10, paddingLeft:15, textAlign:'left',paddingTop:5}}> {shownTime} </Text>
+              <Text style = {{marginLeft:-20,color: '#808080',fontFamily:'Circular Book',fontSize:10, paddingLeft:15, textAlign:'left',paddingTop:5,paddingBottom:this.props.isLast ? 5 : 15}}> {shownTime} </Text>
             );
           }
         }
@@ -52,7 +52,6 @@ export class Message extends Component{
             rounded
             source={{uri: this.props.uri}}
             containerStyle = {{position:'absolute'}}
-            //avatarStyle = {{position:'absolute'}}
             onPress={() => console.log("Works!")}
             activeOpacity={0.7}
           />
@@ -64,10 +63,9 @@ export class Message extends Component{
       if(this.props.isUser){
         return (
           <View style = {{ flex:1 ,flexDirection:'row',justifyContent:'flex-end'}}>
-
           <View style = {{ flexDirection:'column'}}>
           <View style = {{padding:10, backgroundColor:'#FF5A5F', borderRadius:15  }}>
-          <Text style = {{fontFamily:'Circular Book', fontSize:15, color:'white', textAlign:'center'}}>
+          <Text style = {{fontFamily:'Circular Book', fontSize:15, color:'white'}}>
           {this.props.message}
           </Text>
           </View>
@@ -82,7 +80,7 @@ export class Message extends Component{
           {this.showAvatar()}
           <View style = {{marginLeft:50, flexDirection:'column'}}>
           <View style = {{  padding:10,backgroundColor:'#e5e6eb', borderRadius:15 }}>
-          <Text style = {{fontFamily:'Circular Book', fontSize:15, color:'black', textAlign:'center'}}>{this.props.message}</Text>
+          <Text style = {{fontFamily:'Circular Book', fontSize:15, color:'black'}}>{this.props.message}</Text>
           </View>
           {this.showTime()}
           </View>
@@ -93,9 +91,12 @@ export class Message extends Component{
 
       render(){
         return(
-        <View style = {{paddingBottom:5}}>
+        <TouchableOpacity
+        activeOpacity = {0.7}
+        style = {{paddingBottom:5}}
+        >
         {this.isUser()}
-        </View>
+        </TouchableOpacity>
       );
       }
   }

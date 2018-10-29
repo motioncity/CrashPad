@@ -35,40 +35,104 @@ export class MessagesScreen extends Component{
   	constructor(props){
   		super(props);
       this.state = {
-        height: 0
+        height: 0,
+        refreshing:""
       }
     }
 
     componentDidMount(){
       that = this;
-      this.scrollToEnd();
+
     }
+
+    componentWillMount(){
+      this.setState({
+        refreshing:false
+      })
+
+      this.onEndDebounced = this.debounce(function () {
+       this.onEnd.apply(this);
+     }, 700);
+
+     this.getMoreDebounced = this.debounce(function () {
+      this.getMore.apply(this);
+    }, 700);
+    }
+
+    debounce(fn, delay) {
+    var timer = null;
+    return function () {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        fn.apply(context, args);
+      }, delay);
+    };
+  }
 
 
     renderMessages = ({item}) => (
     <Message {...item} />
     );
 
+    renderFooter = () => {
+
+        if(this.state.refreshing){
+        return (
+          <View
+            style={{
+              paddingVertical: 20,
+            }}
+          >
+            <ActivityIndicator animating size="small" />
+          </View>
+        );
+      }
+
+      else{
+        return null;
+      }
+      };
+
 
     updateHeight(contentHeight){
       if(contentHeight < 150){
-        this.setState({height:contentHeight})
+        this.setState({
+          height:contentHeight
+        })
       }
     }
 
-    scrollToEnd = () => {
-   this.scrollView.scrollToEnd();
- }
+    onEnd(){
+      if(!this.state.refreshing && this.props.inbox.canLoadMoreMessages ){
+        this.setState({
+          refreshing:true
+        })
+      }
+    }
+
+    async getMore(){
+      if(this.state.refreshing  && this.props.inbox.canLoadMoreMessages ){
+      await this.props.inbox.getMoreMessages();
+      this.setState({refreshing:false  })
+    }
+    }
+
+
 
     sendMessage(){
-      if(this.props.inbox.messageText.length!=0){
+      if(!/^\s*$/.test(this.props.inbox.messageText)) {
+        this.props.inbox.canLoadMoreMessages = true;
         this.props.inbox.sendMessage();
-          this.scrollToEnd();
+        var that = this;
+        setTimeout(function(){  that.flatList.scrollToOffset({x: 0, y: 0, animated: true}); }, 200);
+
       }
     }
 
       render(){
         let messages = this.props.inbox.messages.slice();
+
         return (
           <KeyboardAvoidingView
             behavior="padding"
@@ -77,49 +141,51 @@ export class MessagesScreen extends Component{
           >
 
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView
-          ref={(scrollView) => { this.scrollView = scrollView }}
-          contentContainerStyle = {{paddingHorizontal:8, paddingTop:30}}
 
-          >
           <FlatList
-            data= {messages}
+            inverted
+            ref={ref => this.flatList = ref}
+            data= {messages.reverse()}
             renderItem={this.renderMessages}
-            style = {{marginTop: -1 * this.state.height}}
-
+            ListFooterComponent={this.renderFooter}
+            onEndReached={(info)=>{
+              if(info.distanceFromEnd >=-100 && this.props.inbox.canLoadMoreMessages){
+                 this.onEndDebounced();
+                this.getMoreDebounced();
+              }
+            }}
+            onEndReachedThreshold={0.05}
+            style = {{marginTop: -1 * this.state.height, paddingHorizontal:8, paddingBottom:30}}
+            contentContainerStyle = {{paddingHorizontal:8, paddingBottom:30}}
           />
-            </ScrollView>
+
             </TouchableWithoutFeedback>
 
-
-
-            <View style = {{flexDirection:'row',justifyContent:'center', alignItems:'center', backgroundColor:'#eeeeee',padding:10}}>
-            <View style = {{borderRadius:20, borderWidth:2, backgroundColor:'white', borderColor:'white', padding:9}}>
+            <View style = {{flexDirection:'row',justifyContent:'center', alignItems:'center', backgroundColor:'white',padding:10, borderTopWidth:1, borderTopColor:'#eeeeee'}}>
+            <View style = {{marginLeft:-30, borderRadius:20, borderWidth:2, backgroundColor:'#eeeeee', borderColor:'transparent', padding:9}}>
             <TextInput
-            autoCapitalize = {'none'}
-            placeholder=' Email'
+            autoCapitalize = {'sentences'}
+            placeholder=' Enter Message '
             onChangeText={(message) => this.props.inbox.messageText = message}
             value={this.props.inbox.messageText}
             multiline = {true}
             onContentSizeChange={(event) =>  this.updateHeight(event.nativeEvent.contentSize.height)}
-            onFocus = {() => this.scrollToEnd()}
-            style = {{color:'red', width:200,borderBottomWidth:0,height: Math.max(15, this.state.height), maxHeight:200}}
+            style = {{backgroundColor:"#eeeeee",color:'black', width:250,borderBottomWidth:0,height: Math.max(10, this.state.height), maxHeight:200}}
              />
              </View>
 
+             <View style = {{position:"absolute", bottom:11, right:18}}>
              <Icon
               name='send'
               type='material-community'
               color='#FF5A5F'
               size = {30}
-              containerStyle={{position:'absolute', right:16, opacity:this.props.inbox.messageText.length == 0 ? 0.2:1}}
+              containerStyle={{opacity: /^\s*$/.test(this.props.inbox.messageText) ? 0.2:1}}
+              avatarStyle = {{position:'absolute'}}
               underlayColor = 'transparent'
               onPress={() => this.sendMessage()} />
-
+              </View>
              </View>
-
-
-
 
             </KeyboardAvoidingView>
 
