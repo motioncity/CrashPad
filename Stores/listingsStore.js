@@ -252,13 +252,6 @@ class listingsStore {
 
         this.selectedIsSaved = false;
 
-
-
-        /*
-        if (this.savedIds.length == 0 ) {
-            schoolRef.remove();
-        }
-        */
         if(this.onSaved && this.savedIdsSavedScreen.length == 0){
           schoolRef.remove()
         }
